@@ -59,7 +59,7 @@ Le traitement combinatoire intermédiaire nécessite l'utilisation des binaires 
 
 Ces composants externes doivent être impérativement accessibles via les variables d'environnement du système (`PATH`). Les fichiers exécutables correspondants peuvent être obtenus via la plateforme officielle de distribution :
 
-> [Dépôt Officiel des Outils Potassco (Clingo)](https://potassco.org/clingo/)
+> [Dépôt Officiel des Outils Potassco (Clingo)](https://sourceforge.net/projects/potassco/files/clingo/)
 
 ---
 

@@ -44,7 +44,7 @@ class PossibilisticSolver:
 
         # 3. Phase de Grounding (Gringo) - EN MODE BINAIRE
         process_gringo = subprocess.run(
-            ["gringo", "-"],
+            ["gringo", "-", "--text"],
             input=p_star_sans_accent.encode('utf-8'),
             capture_output=True,
             text=False
@@ -57,10 +57,10 @@ class PossibilisticSolver:
 
         # 4. Phase de Résolution (Clasp) - EN MODE BINAIRE POUR L'ENTRÉE
         process_clasp = subprocess.run(
-            ["clasp", "0", "--outf=2"],
-            input=process_gringo.stdout,  # Reçoit des bytes bruts
+            ["clasp", "-", "0", "--outf=2"],
+            input=process_gringo.stdout,
             capture_output=True,
-            text=False  # Crucial : on gère les flux en bytes pour éviter le conflit d'encodage
+            text=False
         )
 
         if not process_clasp.stdout:
