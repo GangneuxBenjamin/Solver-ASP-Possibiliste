@@ -45,6 +45,8 @@ Lors de l'appel du point d'entrée du programme, les traitements suivants sont s
 
 L'environnement opérationnel repose sur le couplage d'un code applicatif de haut niveau écrit en Python et de moteurs d'inférence natifs.
 
+> 🐧 **Note sur la compatibilité** : Cet environnement a été développé et validé **exclusivement sous Linux Debian**. En raison de fortes dépendances liées à la gestion des processus Unix et au référencement des binaires systèmes, le comportement et la compatibilité de ce solveur sur d'autres systèmes d'exploitation (macOS, Windows) ne sont pas garantis.
+> 
 ### 1. Environnement Python
 
 L'architecture globale (préprocesseur, structures de filtrage, opérateur de point fixe) est développée en Python 3. L'exécution requiert un interpréteur Python 3 standard.
