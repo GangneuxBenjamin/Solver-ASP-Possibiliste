@@ -1,3 +1,6 @@
+import copy
+
+
 class PossibilisticProgram:
     """
     Construit le programme réduit P^S pour un modèle stable S donné.
@@ -21,10 +24,17 @@ class PossibilisticProgram:
             if regle.tete not in self.modele_S:
                 continue
 
+            # On crée une copie isolée de la règle pour éviter toute modification par référence
+            regle_isolee = copy.deepcopy(regle)
+
+            # Facultatif : On nettoie le corps négatif puisqu'il est validé (réduction)
+            regle_isolee.corps_negatif = []
+
             # Si la règle passe ces critères, elle fait partie du réduit P^S
-            reduit.append(regle)
+            reduit.append(regle_isolee)
         return reduit
 
     def obtenir_poids_regle(self, regle):
         """ Extrait la valeur numérique alpha du marqueur nu__(alpha). """
+        # Correction de la faute de frappe (retrait du '4' parasite)
         return regle.poids_necessite

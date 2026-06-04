@@ -1,9 +1,10 @@
 import re
 
+
 class Preprocesseur:
     """
     Classe chargée de transformer le programme possibiliste en programme ASP
-    compatible avec Gringo, en préservant les poids via l'atome nu__(poids).
+    compatible avec Gringo, en préservant l'intégrité des structures via l'atome poss_rule__.
     """
 
     def __init__(self):
@@ -26,57 +27,53 @@ class Preprocesseur:
     def transformer_regle(self, regle_brute):
         """
         Prend une chaîne "poids tete :- corps."
-        Et retourne "tete :- corps, nu__(poids)."
+        Et applique l'encapsulation de tête anti-optimisation :
+        "poss_rule__(poids, tete) :- corps."
+        Suivie de la projection classique : "tete :- poss_rule__(poids, tete)."
         """
         # Nettoyage des espaces superflus
         regle_brute = regle_brute.strip()
 
-        # Expression régulière pour capturer :
-        # 1. Le poids au début (chiffres)
-        # 2. Le reste de la règle (tête et corps)
-        # On gère les deux formats : "poids tete :- corps." et "poids tete."
+        # Expression régulière pour capturer le poids et le reste de la règle
         match = re.match(r"^(\d+)\s+(.+)$", regle_brute)
 
         if not match:
-            # Si la ligne n'a pas de poids (ex: une directive), on la laisse telle quelle
+            # Si la ligne n'a pas de poids (ex: contrainte d'intégrité), on la conserve telle quelle
+            self.regles_transformees.append(regle_brute)
             return regle_brute
 
         poids = match.group(1)
-        structure_logique = match.group(2).rstrip('.')  # On enlève le point final pour l'instant
+        structure_logique = match.group(2).rstrip('.').strip()  # Enlèvement du point final
 
-        # Ajout du poids dans l'ensemble des poids utilisés (pour les déclarations #external)
+        # Ajout du poids dans l'ensemble des poids utilisés
         self.poids_utilises.add(poids)
 
-        # Reconstruction de la règle en injectant nu__(poids)
-        # Si la règle a un corps (contient ":-")
+        # Extraction de la tête et du corps d'origine
         if ":-" in structure_logique:
             tete, corps = structure_logique.split(":-", 1)
-            # On injecte nu__(poids) dans le corps positif
-            regle_transformee = f"{tete.strip()} :- {corps.strip()}, nu__({poids})."
+            tete = tete.strip()
+            corps = corps.strip()
+
+            # 1. Règle encapsulée : poss_rule__(poids, tete) :- corps.
+            regle_encapsulee = f"poss_rule__({poids}, {tete}) :- {corps}."
         else:
-            # C'est un fait (ex: "100 a(1)."), on lui crée un corps avec le poids
-            regle_transformee = f"{structure_logique.strip()} :- nu__({poids})."
+            tete = structure_logique
+            # 1. Cas d'un fait : poss_rule__(poids, tete).
+            regle_encapsulee = f"poss_rule__({poids}, {tete})."
 
-        # On stocke pour usage ultérieur
-        self.regles_transformees.append(regle_transformee)
+        # 2. Projection classique indispensable pour Clasp : tete :- poss_rule__(poids, tete).
+        projection_classique = f"{tete} :- poss_rule__({poids}, {tete})."
 
-        return regle_transformee
+        # On stocke les deux règles générées dans le catalogue
+        self.regles_transformees.append(regle_encapsulee)
+        self.regles_transformees.append(projection_classique)
+
+        return regle_encapsulee
 
     def generer_code_asp(self):
         """
         Génère le bloc de code final à envoyer au grounder.
-        Inclut la directive #external et les faits nu__(poids).
         """
-        code = []
-
-        # Ajout de la directive cruciale
-        code.append("#external nu__(poids).")
-
-        # Ajout des faits de poids pour que Gringo reconnaisse les symboles
-        for p in self.poids_utilises:
-            code.append(f"nu__({p}).")
-
-        # Ajout des règles transformées
-        code.extend(self.regles_transformees)
-
-        return "\n".join(code)
+        # Plus besoin de forcer des externals ou des nu__() artificiels ici,
+        # la structure poss_rule__ se suffit à elle-même pour bloquer Gringo.
+        return "\n".join(self.regles_transformees)
