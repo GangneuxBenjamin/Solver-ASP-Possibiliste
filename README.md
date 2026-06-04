@@ -66,8 +66,8 @@ sudo apt update && sudo apt install gringo
 
 2. **Création des liens symboliques** (indispensable pour l'interconnexion du script Python) :
 ```bash
-sudo ln -s /usr/bin/clingo /usr/bin/gringo
-sudo ln -s /usr/bin/clingo /usr/bin/clasp
+sudo ln -sf /usr/bin/clingo /usr/bin/gringo
+sudo ln -sf /usr/bin/clingo /usr/bin/clasp
 
 ```
 
