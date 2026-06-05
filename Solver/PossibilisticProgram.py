@@ -12,26 +12,26 @@ class PossibilisticProgram:
         self.regles_reduites = self._generer_reduit()
 
     def _generer_reduit(self):
-        """ Filtre les règles pour construire le réduit possibiliste. """
+        import copy
         reduit = []
         for regle in self.catalogue:
-            # 1. On vérifie si le corps négatif n'est pas contredit par le modèle S
-            # (Si un atome après un 'not' est vrai dans S, la règle est bloquée)
             if any(atome in self.modele_S for atome in regle.corps_negatif):
                 continue
 
-            # 2. On s'assure que la tête de la règle appartient bien au modèle S
-            if regle.tete not in self.modele_S:
+            tete_test = regle.tete
+            if regle.tete.startswith("poss_rule__"):
+                # Exemple : poss_rule__(70,b(1)) -> on coupe au premier ',' et on enlève le dernier ')'
+                partie_interne = regle.tete.split("poss_rule__(")[1]
+                # On isole tout ce qui est après la première virgule (le reste de l'atome)
+                tete_test = partie_interne.split(",", 1)[1]
+                # On enlève uniquement la toute dernière parenthèse de l'enveloppe
+                if tete_test.endswith(")"):
+                    tete_test = tete_test[:-1]
+
+            if tete_test not in self.modele_S and tete_test != "true":
                 continue
 
-            # On crée une copie isolée de la règle pour éviter toute modification par référence
-            regle_isolee = copy.deepcopy(regle)
-
-            # Facultatif : On nettoie le corps négatif puisqu'il est validé (réduction)
-            regle_isolee.corps_negatif = []
-
-            # Si la règle passe ces critères, elle fait partie du réduit P^S
-            reduit.append(regle_isolee)
+            reduit.append(copy.deepcopy(regle))
         return reduit
 
     def obtenir_poids_regle(self, regle):

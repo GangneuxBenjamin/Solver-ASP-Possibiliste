@@ -5,8 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f4a4ac42-0286-44a5-b43f-c352d973ca41" name="Changes" comment="code">
-      <change afterPath="$PROJECT_DIR$/Solver/Exemples/analyse_decisionnelle.lp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Solver/Exemples/testr.lp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Solver/FixPointOperator.py" beforeDir="false" afterPath="$PROJECT_DIR$/Solver/FixPointOperator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Solver/PossibilisticProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/Solver/PossibilisticProgram.py" afterDir="false" />
@@ -148,7 +146,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780566953052</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="code">
+      <option name="closed" value="true" />
+      <created>1780578203891</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1780578203891</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

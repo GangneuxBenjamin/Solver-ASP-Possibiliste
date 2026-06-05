@@ -95,59 +95,49 @@ class PossibilisticSolver:
                 self.corps_negatif = corps_negatif
                 self.poids_necessite = poids_necessite
 
-
         regles = []
         for ligne in lignes_groundees:
             ligne = ligne.strip()
             if not ligne or ligne.startswith("#external"):
                 continue
 
-            # Harmonisation : On supprime les espaces superflus pour éviter les décalages de clés
             ligne = ligne.replace(", ", ",")
 
             ligne_propre = ligne.rstrip(".")
-            ligne_propre = ligne_propre.replace("__accent_e__", "é").replace("__accent_e_grave__", "è").replace(
-                "__accent_a__", "à")
+            ligne_propre = ligne_propre.replace("__accent_e__", "é").replace("__accent_e_grave__", "è").replace("__accent_a__", "à")
 
             if ":-" not in ligne_propre:
-                # Fait pur au sol
                 regles.append(RegleFormattee(ligne_propre, [], [], 100))
                 continue
 
             tete, corps = ligne_propre.split(":-", 1)
             tete = tete.strip()
 
-            # --- DECOUPAGE ALGORITHMIQUE SECURISE DU CORPS ---
+            # Découpage algorithmique par niveau de parenthèses
             atomes_corps = []
             atome_courant = []
             niveau_parentheses = 0
-
             for caractere in corps:
-                if caractere == '(':
-                    niveau_parentheses += 1
-                elif caractere == ')':
-                    niveau_parentheses -= 1
-
-                # Si on croise une virgule au niveau 0, on valide l'atome courant
+                if caractere == '(': niveau_parentheses += 1
+                elif caractere == ')': niveau_parentheses -= 1
                 if caractere == ',' and niveau_parentheses == 0:
                     atomes_corps.append("".join(atome_courant).strip())
                     atome_courant = []
                 else:
                     atome_courant.append(caractere)
-
             if atome_courant:
                 atomes_corps.append("".join(atome_courant).strip())
 
-            # Filtration des corps positifs et négatifs
             corps_positif = [a for a in atomes_corps if a and not a.startswith("not")]
             corps_negatif = [a.replace("not ", "").strip() for a in atomes_corps if a and a.startswith("not")]
 
-            # Calcul du poids de la règle
             poids = 100
-            if "poss_rule__" in tete:
-                match = re.match(r"poss_rule__\((\d+),(.+)\)", tete)
-                if match:
-                    poids = int(match.group(1))
+            if tete.startswith("poss_rule__"):
+                try:
+                    # Extraction propre du poids : ce qui est entre 'poss_rule__(' et la première virgule
+                    poids = int(tete.split("poss_rule__(")[1].split(",")[0])
+                except (IndexError, ValueError):
+                    poids = 100
 
             regles.append(RegleFormattee(tete, corps_positif, corps_negatif, poids))
 
