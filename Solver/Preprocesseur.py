@@ -25,13 +25,7 @@ class Preprocesseur:
                     self.transformer_regle(ligne)
 
     def transformer_regle(self, regle_brute):
-        """
-        Prend une chaîne "poids tete :- corps."
-        Et applique l'encapsulation de tête anti-optimisation.
-        Les faits sont traduits avec un corps ":- true." pour bloquer Gringo.
-        """
         regle_brute = regle_brute.strip()
-
         match = re.match(r"^(\d+)\s+(.+)$", regle_brute)
 
         if not match:
@@ -40,25 +34,33 @@ class Preprocesseur:
 
         poids = match.group(1)
         structure_logique = match.group(2).rstrip('.').strip()
-
         self.poids_utilises.add(poids)
 
+        # --- CAS PARTICULIER : C'est une contrainte d'intégrité (pas de tête) ---
+        if structure_logique.startswith(":-"):
+            corps = structure_logique.split(":-", 1)[1].strip()
+            # On crée un identifiant technique unique pour cette contrainte
+            id_contrainte = f"constraint_{len(self.regles_transformees)}"
+
+            regle_encapsulee = f"poss_rule__({poids},{id_contrainte}) :- {corps}."
+            # Si la contrainte est violée, on déclenche une contradiction classique
+            projection_classique = f":- {corps}, poss_rule__({poids},{id_contrainte})."
+
+            self.regles_transformees.append(regle_encapsulee)
+            self.regles_transformees.append(projection_classique)
+            return regle_encapsulee
+
+        # --- CAS GÉNÉRAL (Règles et Faits) ---
         if ":-" in structure_logique:
             tete, corps = structure_logique.split(":-", 1)
-            tete = tete.strip()
-            corps = corps.strip()
-
-            regle_encapsulee = f"poss_rule__({poids},{tete}) :- {corps}."
+            regle_encapsulee = f"poss_rule__({poids},{tete.strip()}) :- {corps.strip()}."
+            projection_classique = f"{tete.strip()} :- poss_rule__({poids},{tete.strip()})."
         else:
-            tete = structure_logique
-            # --- CORRECTION ICI : Un fait possibiliste possède le corps "true" ---
-            regle_encapsulee = f"poss_rule__({poids},{tete}) :- true."
-
-        projection_classique = f"{tete} :- poss_rule__({poids},{tete})."
+            regle_encapsulee = f"poss_rule__({poids},{structure_logique}) :- true."
+            projection_classique = f"{structure_logique} :- poss_rule__({poids},{structure_logique})."
 
         self.regles_transformees.append(regle_encapsulee)
         self.regles_transformees.append(projection_classique)
-
         return regle_encapsulee
 
     def generer_code_asp(self):

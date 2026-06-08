@@ -33,7 +33,7 @@ class PossibilisticSolver:
         )
 
         if process_gringo.returncode != 0 or not process_gringo.stdout:
-            print("❌ Erreur lors de la mise au sol (Gringo) :")
+            print("❌ Erreur lors de la phase d'instanciation(Gringo) :")
             print(process_gringo.stderr.decode('utf-8', errors='ignore'))
             return []
 

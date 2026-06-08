@@ -18,22 +18,23 @@ class FixPointOperator:
         self.poids_atomes["true"] = 100
 
     def calculer(self):
+        """
+        Applique l'opérateur jusqu'à convergence complète (Point Fixe).
+        """
         modifie = True
         while modifie:
             modifie = False
 
-            # Forcer la persistance du fait top à chaque itération
-            self.poids_atomes["true"] = 100
-
             for regle in self.programme_reduit.regles_reduites:
-                if regle.tete == "true":
-                    continue
-
-                # Calcul du corps positif
+                # Évaluation robuste du corps positif
                 if not regle.corps_positif:
                     certitude_corps = 100
                 else:
-                    certitude_corps = min(self.poids_atomes.get(atome, 0) for atome in regle.corps_positif)
+                    # Court-circuit : si l'atome est 'true', sa certitude vaut 100 d'office
+                    certitude_corps = min(
+                        100 if atome == "true" else self.poids_atomes.get(atome, 0)
+                        for atome in regle.corps_positif
+                    )
 
                 # Application de la borne possibiliste (Modus Ponens Généralisé)
                 certitude_conclusion = min(regle.poids_necessite, certitude_corps)
@@ -43,6 +44,9 @@ class FixPointOperator:
                     self.poids_atomes[regle.tete] = certitude_conclusion
                     modifie = True
 
-        # Renvoi des résultats épurés des fonctions d'encapsulation
-        return {atome: poids for atome, poids in self.poids_atomes.items() if
-                not atome.startswith("poss_rule__") and atome != "true"}
+        # Renvoi des résultats épurés et strictement synchronisés avec l'Answer Set de Clasp
+        return {
+            atome: poids
+            for atome, poids in self.poids_atomes.items()
+            if atome in self.modele_S and not atome.startswith("poss_rule__") and atome != "true"
+        }
