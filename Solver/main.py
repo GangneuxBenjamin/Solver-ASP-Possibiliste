@@ -15,7 +15,7 @@ def main():
 
     nom_fichier_entree = sys.argv[1]
     dossier_actuel = os.path.dirname(os.path.abspath(__file__))
-    chemin_lp = os.path.join(dossier_actuel, "Exemples", nom_fichier_entree)
+    chemin_lp = os.path.join(dossier_actuel,  nom_fichier_entree)
 
     if not os.path.exists(chemin_lp):
         print(f"Erreur : Le fichier '{chemin_lp}' est introuvable.")

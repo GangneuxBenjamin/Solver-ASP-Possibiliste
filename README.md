@@ -99,10 +99,10 @@ L'application peut ensuite être appelée de deux manières distinctes selon le 
 
 ### Option A : Restitution standard dans la console
 
-Pour afficher directement les modèles calculés et l'évaluation possibiliste au sein du terminal d'exécution, passez uniquement le nom du fichier source en paramètre (le script cherchera automatiquement le fichier dans le répertoire `Exemples/`) :
+Pour afficher directement les modèles calculés et l'évaluation possibiliste au sein du terminal d'exécution, passez le fichier avec son chemin relatif en paramètre :
 
 ```bash
-python3 main.py meteo.lp
+python3 main.py Chemin_relatif/meteo.lp
 
 ```
 
