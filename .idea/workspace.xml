@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f4a4ac42-0286-44a5-b43f-c352d973ca41" name="Changes" comment="code">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Solver/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Solver/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Solver/Exemples/chaine_3_sommets.lp" beforeDir="false" afterPath="$PROJECT_DIR$/Solver/Exemples/chaine_3_sommets.lp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
